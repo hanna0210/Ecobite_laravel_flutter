@@ -1,0 +1,8 @@
+while loading customer app, there is no api(so I added fixed value)
+
+-- vendor app
+To Re-enable Login Later:  splash.vm.dart
+When your backend is properly configured with a manager assigned to a vendor, simply:
+Remove the new code (lines 89-93)
+Uncomment the original code (lines 95-126)
+Now you can see the main page UI without needing to login! 🎉
