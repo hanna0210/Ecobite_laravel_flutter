@@ -12,6 +12,7 @@ import 'package:fuodz/view_models/welcome.vm.dart';
 import 'package:fuodz/views/pages/vendor/widgets/banners.view.dart';
 import 'package:fuodz/views/pages/vendor/widgets/section_vendors.view.dart';
 import 'package:fuodz/widgets/cards/custom.visibility.dart';
+import 'package:fuodz/widgets/section_food_rescues.view.dart';
 import 'package:fuodz/widgets/cards/welcome_intro.view.dart';
 import 'package:fuodz/widgets/custom_list_view.dart';
 import 'package:fuodz/widgets/finance/wallet_management.view.dart';
@@ -155,6 +156,17 @@ class EmptyWelcome extends StatelessWidget {
               itemWidth: context.percentWidth * 48,
               byLocation: AppStrings.enableFatchByLocation,
               hideEmpty: true,
+            ),
+            //rescue offers
+            SectionFoodRescuesView(
+              null,
+              title: "Rescue Offers".tr(),
+              scrollDirection: Axis.horizontal,
+              itemWidth: context.percentWidth * 48,
+              byLocation: AppStrings.enableFatchByLocation,
+              hideEmpty: true,
+              itemsPadding: EdgeInsets.symmetric(horizontal: 20),
+              titlePadding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
             //spacing
             40.heightBox,

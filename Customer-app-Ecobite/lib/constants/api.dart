@@ -109,6 +109,11 @@ class Api {
   static const flashSales = "/flash/sales";
   static const externalRedirect = "/external/redirect";
 
+  //food rescues
+  static const foodRescues = "/food-rescues";
+  static const nearbyFoodRescues = "/food-rescues/nearby/list";
+  static const favouriteFoodRescues = "/favourite/food-rescues";
+
   //
   static const cancellationReasons = "/cancellation/reasons";
 

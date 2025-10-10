@@ -12,6 +12,7 @@ import 'package:fuodz/views/pages/vendor/widgets/banners.view.dart';
 import 'package:fuodz/views/pages/vendor/widgets/section_products.view.dart';
 import 'package:fuodz/views/pages/vendor/widgets/section_vendors.view.dart';
 import 'package:fuodz/views/shared/widgets/section_coupons.view.dart';
+import 'package:fuodz/widgets/section_food_rescues.view.dart';
 import 'package:fuodz/widgets/cards/custom.visibility.dart';
 import 'package:fuodz/widgets/list_items/plain_vendor_type.vertical_list_item.dart';
 import 'package:fuodz/widgets/states/loading.shimmer.dart';
@@ -139,6 +140,17 @@ class _PlainEmptyWelcomeState extends State<PlainEmptyWelcome> {
             hideEmpty: true,
             itemsPadding: EdgeInsets.fromLTRB(12, 0, 12, 5),
             listHeight: context.percentHeight * 20,
+          ),
+          //rescue offers
+          SectionFoodRescuesView(
+            null,
+            title: "Rescue Offers".tr(),
+            scrollDirection: Axis.horizontal,
+            itemWidth: context.percentWidth * 48,
+            byLocation: AppStrings.enableFatchByLocation,
+            hideEmpty: true,
+            itemsPadding: EdgeInsets.symmetric(horizontal: 12),
+            titlePadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
           //spacing
           UiSpacer.vSpace(100),

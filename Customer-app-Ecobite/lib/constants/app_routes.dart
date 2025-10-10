@@ -13,6 +13,7 @@ class AppRoutes {
   static const vendorDetails = "vendor";
   static const product = "product";
   static const serviceDetails = "service";
+  static const foodRescueDetails = "food_rescue";
   static const search = "search";
 
   //

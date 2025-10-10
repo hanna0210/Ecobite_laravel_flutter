@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fuodz/constants/app_routes.dart';
 import 'package:fuodz/models/checkout.dart';
 import 'package:fuodz/models/delivery_address.dart';
+import 'package:fuodz/models/food_rescue.dart';
 import 'package:fuodz/models/notification.dart';
 import 'package:fuodz/models/order.dart';
 import 'package:fuodz/models/product.dart';
@@ -17,6 +18,7 @@ import 'package:fuodz/views/pages/delivery_address/delivery_addresses.page.dart'
 import 'package:fuodz/views/pages/delivery_address/edit_delivery_addresses.page.dart';
 import 'package:fuodz/views/pages/delivery_address/new_delivery_addresses.page.dart';
 import 'package:fuodz/views/pages/favourite/favourites.page.dart';
+import 'package:fuodz/views/pages/food_rescue/food_rescue_details.page.dart';
 import 'package:fuodz/views/pages/home.page.dart';
 import 'package:fuodz/views/pages/order/orders_tracking.page.dart';
 import 'package:fuodz/views/pages/profile/change_password.page.dart';
@@ -80,6 +82,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         settings: RouteSettings(name: AppRoutes.serviceDetails),
         builder: (context) => ServiceDetailsPage(settings.arguments as Service),
+      );
+
+    //Food Rescue details
+    case AppRoutes.foodRescueDetails:
+      return MaterialPageRoute(
+        settings: RouteSettings(name: AppRoutes.foodRescueDetails),
+        builder:
+            (context) => FoodRescueDetailsPage(
+              foodRescue: settings.arguments as FoodRescue,
+            ),
       );
 
     //Checkout page
