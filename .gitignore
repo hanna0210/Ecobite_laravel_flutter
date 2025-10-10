@@ -136,3 +136,17 @@ firebase_app_id_file.json
 # macOS hidden files
 **/__MACOSX/
 
+# Laravel Backend (EcoBite-Project)
+EcoBite-Project/vendor/
+EcoBite-Project/node_modules/
+EcoBite-Project/storage/framework/cache/*
+EcoBite-Project/storage/framework/sessions/*
+EcoBite-Project/storage/framework/testing/*
+EcoBite-Project/storage/framework/views/*
+EcoBite-Project/storage/logs/*
+EcoBite-Project/bootstrap/cache/*
+EcoBite-Project/.env
+EcoBite-Project/.env.backup
+EcoBite-Project/.phpunit.result.cache
+EcoBite-Project/public/storage
+
