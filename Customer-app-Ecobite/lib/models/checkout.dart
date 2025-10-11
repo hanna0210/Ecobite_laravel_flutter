@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fuodz/models/cart.dart';
 import 'package:fuodz/models/coupon.dart';
 import 'package:fuodz/models/delivery_address.dart';
+import 'package:fuodz/models/dynamic_pricing.dart';
 import 'package:fuodz/models/fee.dart';
 import 'package:fuodz/models/payment_method.dart';
 
@@ -30,6 +31,7 @@ class CheckOut {
   String? deliveryFeeToken;
   List<Fee> fees = [];
   double totalFee;
+  DynamicPricing? dynamicPricing;
 
   //
   CheckOut({
@@ -56,6 +58,7 @@ class CheckOut {
     this.deliveryFeeToken,
     this.fees = const [],
     this.totalFee = 0,
+    this.dynamicPricing,
   });
 
   //
@@ -115,6 +118,9 @@ class CheckOut {
       totalFee: json["total_fee"] == null
           ? 0.00
           : double.parse(json["total_fee"].toString()),
+      dynamicPricing: json["dynamic_pricing"] == null
+          ? null
+          : DynamicPricing.fromJson(json["dynamic_pricing"]),
     );
   }
 
@@ -143,6 +149,7 @@ class CheckOut {
       "delivery_fee_token": deliveryFeeToken,
       "fees": fees.map((x) => x.toJson()).toList(),
       "total_fee": totalFee,
+      "dynamic_pricing": dynamicPricing?.toJson(),
     };
   }
 

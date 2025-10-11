@@ -5,6 +5,7 @@ import 'package:fuodz/extensions/dynamic.dart';
 import 'package:fuodz/extensions/string.dart';
 import 'package:fuodz/models/order.dart';
 import 'package:fuodz/views/pages/cart/widgets/amount_tile.dart';
+import 'package:fuodz/widgets/cards/dynamic_pricing_badge.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -31,12 +32,24 @@ class OrderDetailsSummary extends StatelessWidget {
         ).py2(),
         Visibility(
           visible: order.deliveryFee != null,
-          child: AmountTile(
-            "Delivery Fee".tr(),
-            "+ " +
-                "$currencySymbol ${order.deliveryFee ?? 0}"
-                    .currencyFormat(currencySymbol),
-          ).py2(),
+          child: VStack(
+            [
+              AmountTile(
+                "Delivery Fee".tr(),
+                "+ " +
+                    "$currencySymbol ${order.deliveryFee ?? 0}"
+                        .currencyFormat(currencySymbol),
+              ).py2(),
+              // Dynamic pricing badge
+              if (order.dynamicPricing != null &&
+                  order.dynamicPricing!.isDynamic)
+                DynamicPricingBadge(
+                  dynamicPricing: order.dynamicPricing!,
+                  compact: true,
+                ).pOnly(left: 4, bottom: 4),
+            ],
+            crossAlignment: CrossAxisAlignment.start,
+          ),
         ),
         AmountTile(
           "Tax (%s)".tr().fill(["${order.taxRate ?? 0}%"]),

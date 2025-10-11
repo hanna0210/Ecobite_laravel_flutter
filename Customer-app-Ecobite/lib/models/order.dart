@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/models/delivery_address.dart';
 import 'package:fuodz/models/driver.dart';
+import 'package:fuodz/models/dynamic_pricing.dart';
 import 'package:fuodz/models/order_attachment.dart';
 import 'package:fuodz/models/order_fee.dart';
 import 'package:fuodz/models/order_service.dart';
@@ -72,6 +73,7 @@ class Order {
     this.photo,
     this.attachments,
     this.fees,
+    this.dynamicPricing,
   });
 
   int id;
@@ -127,6 +129,7 @@ class Order {
   String? photo;
   List<OrderAttachment>? attachments;
   List<OrderFee>? fees;
+  DynamicPricing? dynamicPricing;
 
   factory Order.fromJson(dynamic json) {
     //parse fees
@@ -282,6 +285,9 @@ class Order {
               : List<OrderFee>.from(
                 (fees as List).map((x) => OrderFee.fromJson(x)),
               ),
+      dynamicPricing: json["dynamic_pricing"] == null
+          ? null
+          : DynamicPricing.fromJson(json["dynamic_pricing"]),
     );
   }
 

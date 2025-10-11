@@ -11,6 +11,7 @@ import 'package:fuodz/views/pages/parcel/widgets/package_delivery_discount_secti
 import 'package:fuodz/views/pages/parcel/widgets/parcel_order_payer.dart';
 import 'package:fuodz/widgets/busy_indicator.dart';
 import 'package:fuodz/widgets/cards/custom.visibility.dart';
+import 'package:fuodz/widgets/cards/dynamic_pricing_indicator.dart';
 import 'package:fuodz/widgets/cards/vendor_fees.view.dart';
 import 'package:fuodz/widgets/custom_grid_view.dart';
 import 'package:fuodz/widgets/list_items/payment_method.list_item.dart';
@@ -126,6 +127,14 @@ class PackageDeliveryPayment extends StatelessWidget {
                 ],
               ),
             ),
+
+            //dynamic pricing indicator
+            if (vm.packageCheckout.dynamicPricing != null &&
+                vm.packageCheckout.dynamicPricing!.isDynamic)
+              DynamicPricingIndicator(
+                dynamicPricing: vm.packageCheckout.dynamicPricing!,
+              ).pOnly(top: 12, bottom: 12),
+
             //
             UiSpacer.formVerticalSpace(),
             Divider(),

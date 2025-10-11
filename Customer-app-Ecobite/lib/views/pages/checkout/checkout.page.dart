@@ -12,6 +12,7 @@ import 'package:fuodz/views/pages/checkout/widgets/payment_methods.view.dart';
 import 'package:fuodz/views/pages/checkout/widgets/schedule_order.view.dart';
 import 'package:fuodz/widgets/base.page.dart';
 import 'package:fuodz/widgets/buttons/custom_button.dart';
+import 'package:fuodz/widgets/cards/dynamic_pricing_indicator.dart';
 import 'package:fuodz/widgets/cards/order_summary.dart';
 import 'package:fuodz/widgets/custom_text_form_field.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
@@ -90,6 +91,13 @@ class CheckoutPage extends StatelessWidget {
                 total: vm.checkout!.totalWithTip,
                 fees: vm.vendor!.fees,
               ),
+
+              //dynamic pricing indicator
+              if (vm.checkout!.dynamicPricing != null &&
+                  vm.checkout!.dynamicPricing!.isDynamic)
+                DynamicPricingIndicator(
+                  dynamicPricing: vm.checkout!.dynamicPricing!,
+                ).pOnly(top: 12, bottom: 12),
 
               //show notice it driver should be paid in cash
               if (vm.checkout!.deliveryAddress != null)

@@ -1,5 +1,6 @@
 import 'package:fuodz/models/coupon.dart';
 import 'package:fuodz/models/delivery_address.dart';
+import 'package:fuodz/models/dynamic_pricing.dart';
 import 'package:fuodz/models/fee.dart';
 import 'package:fuodz/models/order_stop.dart';
 import 'package:fuodz/models/package_type.dart';
@@ -41,6 +42,7 @@ class PackageCheckout {
   String? deliverySlotDate;
   String? deliverySlotTime;
   String? token;
+  DynamicPricing? dynamicPricing;
 
   //
   PackageCheckout({
@@ -73,6 +75,7 @@ class PackageCheckout {
     this.deliverySlotTime = "",
     this.coupon,
     this.token,
+    this.dynamicPricing,
   });
 
   //
@@ -111,6 +114,9 @@ class PackageCheckout {
           ((json["allStops"] ?? json["stops"] ?? []) as List).map((stopJson) {
         return OrderStop.fromJson(stopJson);
       }).toList(),
+      dynamicPricing: json["dynamic_pricing"] == null
+          ? null
+          : DynamicPricing.fromJson(json["dynamic_pricing"]),
     );
   }
 
@@ -147,5 +153,6 @@ class PackageCheckout {
         "total": total == null ? null : total,
         "discount": discount,
         "token": token,
+        "dynamic_pricing": dynamicPricing?.toJson(),
       };
 }
