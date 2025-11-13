@@ -72,7 +72,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_overboard: ^3.1.1
-  flutter_polyline_points: ^1.0.0
   flutter_rating_bar: ^4.0.1
   flutter_signin_button: ^2.0.0
   flutter_staggered_animations: ^1.0.0
@@ -84,10 +83,9 @@ dependencies:
   glass: ^1.0.1+1
   glass_kit: 3.0.0
   google_fonts: ^6.2.1
-  google_maps_flutter: ^2.12.1
-  google_maps_place_picker_mb_v2: ^1.0.1
   google_nav_bar: ^5.0.6
-  google_places_flutter: ^2.1.0
+  google_maps_flutter:
+    path: ../mapbox_compat/google_maps_flutter
   google_sign_in: ^5.3.3
   group_radio_button: 1.2.0
   http: ^1.0.0
@@ -154,8 +152,6 @@ dependency_overrides:
 
 dev_dependencies:
   flutter_application_id: ^2.0.0-dev
-  flutter_launcher_icons: ^0.14.3
-  flutter_native_splash: ^2.4.6
   flutter_test:
     sdk: flutter
   spider: ^4.2.2

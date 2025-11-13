@@ -33,22 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.4.4"
-  ansicolor:
-    dependency: transitive
-    description:
-      name: ansicolor
-      sha256: "50e982d500bc863e1d703448afdbf9e5a72eb48840a4f766fa361ffd6877055f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   archive:
     dependency: transitive
     description:
       name: archive
-      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
+      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.7"
+    version: "3.6.1"
   args:
     dependency: "direct main"
     description:
@@ -105,6 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.9.4"
+  benchmark:
+    dependency: transitive
+    description:
+      name: benchmark
+      sha256: cb3eeea01e3f054df76ee9775ca680f3afa5f19f39b2bb426ba78ba27654493b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   bg_launcher:
     dependency: "direct main"
     description:
@@ -201,14 +201,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.7.5"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -346,6 +338,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  dart_sort_queue:
+    dependency: transitive
+    description:
+      name: dart_sort_queue
+      sha256: f3353ba8b4850e072d3368757f62edb79af34a9703c3e3df9c59342721f5f5b1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2+3"
   dart_style:
     dependency: transitive
     description:
@@ -897,14 +897,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
-  flutter_launcher_icons:
-    dependency: "direct dev"
-    description:
-      name: flutter_launcher_icons
-      sha256: "526faf84284b86a4cb36d20a5e45147747b7563d921373d4ee0559c54fcdbcea"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.13.1"
   flutter_lifecycle_detector:
     dependency: "direct main"
     description:
@@ -926,14 +918,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7"
-  flutter_native_splash:
-    dependency: "direct dev"
-    description:
-      name: flutter_native_splash
-      sha256: "8321a6d11a8d13977fa780c89de8d257cce3d841eecfb7a4cadffcc4f12d82dc"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.6"
   flutter_overboard:
     dependency: "direct main"
     description:
@@ -1064,6 +1048,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.0"
+  geotypes:
+    dependency: transitive
+    description:
+      name: geotypes
+      sha256: "5bedf57de92283133dd221e363812ef50eaaba414f0823b1974ef7d84b86991f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   get_it:
     dependency: transitive
     description:
@@ -1088,6 +1080,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.2.1"
+  google_maps_flutter:
+    dependency: "direct main"
+    description:
+      path: "../mapbox_compat/google_maps_flutter"
+      relative: true
+    source: path
+    version: "0.0.1"
   google_nav_bar:
     dependency: "direct main"
     description:
@@ -1132,10 +1131,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
+      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.4"
+    version: "4.3.0"
   image_picker:
     dependency: "direct main"
     description:
@@ -1368,6 +1367,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.5.0"
+  mapbox_maps_flutter:
+    dependency: transitive
+    description:
+      name: mapbox_maps_flutter
+      sha256: "62d696ebee5485c53c0dbbc7181069a0b7a41fcc3263ef261e49be342f00ce7a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.12.0"
   markdown:
     dependency: transitive
     description:
@@ -1612,10 +1619,10 @@ packages:
     dependency: "direct main"
     description:
       name: pdf
-      sha256: "28eacad99bffcce2e05bba24e50153890ad0255294f4dd78a17075a2ba5c8416"
+      sha256: "9f75fc7f5580ea5e635b5724de58fb27f684c9ad03ed46fdc1aac768e4557315"
       url: "https://pub.dev"
     source: hosted
-    version: "3.11.3"
+    version: "3.10.4"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1752,14 +1759,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.9.1"
-  posix:
-    dependency: transitive
-    description:
-      name: posix
-      sha256: f0d7856b6ca1887cfa6d1d394056a296ae33489db914e365e2044fdada449e62
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.2"
   pretty_dio_logger:
     dependency: "direct main"
     description:
@@ -1856,6 +1855,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.1"
+  rbush:
+    dependency: transitive
+    description:
+      name: rbush
+      sha256: "48b683421b4afb43a642f82c6aa31911e54f3069143d31c7d33cbe329df13403"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.1"
   rx_shared_preferences:
     dependency: "direct main"
     description:
@@ -2133,6 +2140,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  sweepline_intersections:
+    dependency: transitive
+    description:
+      name: sweepline_intersections
+      sha256: a665c707200a4f07140a4029b41a7c4883beb3f04322cd8e08ebf650f69e1176
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   syncfusion_flutter_core:
     dependency: transitive
     description:
@@ -2189,6 +2204,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.7"
+  turf:
+    dependency: transitive
+    description:
+      name: turf
+      sha256: "75347c45a5c1de805db7cb182286f05a3770e01546626c4dc292709d15cbe436"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.10"
+  turf_equality:
+    dependency: transitive
+    description:
+      name: turf_equality
+      sha256: f0f44ffe389547941358e0d3d4a747db2bd56115b32ff1cede5e5bdf3126a3e2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
+  turf_pip:
+    dependency: transitive
+    description:
+      name: turf_pip
+      sha256: ba4fd414baffd5d7b30880658ad6db82461c49ec023f8ffd0c23d398ad8b14be
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   typed_data:
     dependency: transitive
     description:

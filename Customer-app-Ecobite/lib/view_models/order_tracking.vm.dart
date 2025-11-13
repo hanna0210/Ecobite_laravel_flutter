@@ -5,11 +5,10 @@ import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:fuodz/constants/app_colors.dart';
 import 'package:fuodz/constants/app_images.dart';
-import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/models/order.dart';
 import 'package:fuodz/view_models/base.view_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:fuodz/services/mapbox_directions.service.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class OrderTrackingViewModel extends MyBaseViewModel {
@@ -20,7 +19,6 @@ class OrderTrackingViewModel extends MyBaseViewModel {
   LatLng? pickupLatLng;
   LatLng? destinationLatLng;
   LatLng? driverLatLng;
-  PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
 
   //
@@ -141,20 +139,12 @@ class OrderTrackingViewModel extends MyBaseViewModel {
 
   //
   void getPolyline() async {
-    List<LatLng> polylineCoordinates = [];
-
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      AppStrings.googleMapApiKey,
-      PointLatLng(pickupLatLng!.latitude, pickupLatLng!.longitude),
-      PointLatLng(destinationLatLng!.latitude, destinationLatLng!.longitude),
-      travelMode: TravelMode.driving,
+    List<LatLng> polylineCoordinates = await MapboxDirectionsService.getRoute(
+      origin: pickupLatLng!,
+      destination: destinationLatLng!,
     );
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    } else {
-      print(result.errorMessage);
+    if (polylineCoordinates.isEmpty) {
+      polylineCoordinates = [pickupLatLng!, destinationLatLng!];
     }
     //
     addPolyLine(polylineCoordinates);

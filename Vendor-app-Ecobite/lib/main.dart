@@ -6,6 +6,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fuodz/constants/app_languages.dart';
+import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/my_app.dart';
 import 'package:fuodz/services/general_app.service.dart';
 // import 'package:fuodz/services/lifecycle_event_handler.dart';
@@ -13,6 +14,7 @@ import 'package:fuodz/services/local_storage.service.dart';
 import 'package:fuodz/services/firebase.service.dart';
 import 'package:fuodz/services/notification.service.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 //ssll handshake error
 class MyHttpOverrides extends HttpOverrides {
@@ -47,6 +49,10 @@ void main() async {
       FirebaseMessaging.onBackgroundMessage(
         GeneralAppService.onBackgroundMessageHandler,
       );
+
+      gmaps.GoogleMapConfig.accessToken = AppStrings.mapboxAccessToken;
+      gmaps.GoogleMapConfig.styleString =
+          AppStrings.env('mapboxStyleUrl') ?? AppStrings.env('mapbox_style_url');
 
       //prevent ssl error
       HttpOverrides.global = new MyHttpOverrides();

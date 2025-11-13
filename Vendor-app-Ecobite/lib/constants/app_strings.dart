@@ -7,6 +7,8 @@ class AppStrings {
   static String get appName => env('app_name') ?? "Fuodz";
   static String get companyName => env('company_name') ?? "Fuodz";
   static String get googleMapApiKey => env('google_maps_key') ?? "";
+  static String get mapboxAccessToken =>
+      env('mapboxApiKey') ?? env('mapbox_api_key') ?? "";
   static bool get enableChat => env('enableChat') == "1";
   static bool get partnersCanRegister =>
       ["1", 1].contains(env('partnersCanRegister'));

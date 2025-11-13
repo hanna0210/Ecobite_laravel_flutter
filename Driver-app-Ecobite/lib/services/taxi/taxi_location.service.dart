@@ -62,29 +62,32 @@ class TaxiLocationService {
           );
 
 //
-          taxiViewModel!.taxiGoogleMapManagerService.gMapMarkers =
-              taxiViewModel!.taxiGoogleMapManagerService.gMapMarkers
-                  .replaceFirstWhere(
-                    (marker) =>
-                        marker.markerId ==
-                        taxiViewModel!
-                            .taxiGoogleMapManagerService.driverMarkerId,
-                    driverMarker!,
-                  )
-                  .toSet();
-        } else {
-          //update driver maker
-          driverMarker = driverMarker?.copyWith(
-            positionParam: LatLng(
-              event.latitude,
-              event.longitude,
-            ),
-            rotationParam: event.heading,
+          taxiViewModel!.taxiGoogleMapManagerService.gMapMarkers.removeWhere(
+            (marker) =>
+                marker.markerId ==
+                taxiViewModel!.taxiGoogleMapManagerService.driverMarkerId,
           );
-
-          //
           taxiViewModel!.taxiGoogleMapManagerService.gMapMarkers
               .add(driverMarker!);
+        } else {
+          //update driver maker
+          if (driverMarker != null) {
+            driverMarker = driverMarker!.copyWith(
+              positionParam: LatLng(
+                event.latitude,
+                event.longitude,
+              ),
+              rotationParam: event.heading,
+            );
+
+            taxiViewModel!.taxiGoogleMapManagerService.gMapMarkers.removeWhere(
+              (marker) =>
+                  marker.markerId ==
+                  taxiViewModel!.taxiGoogleMapManagerService.driverMarkerId,
+            );
+            taxiViewModel!.taxiGoogleMapManagerService.gMapMarkers
+                .add(driverMarker!);
+          }
         }
 
         //

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fuodz/constants/app_images.dart';
+import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/models/order.dart';
 import 'package:fuodz/utils/map.utils.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -67,12 +68,12 @@ class _TaxiTripMapPreviewState extends State<TaxiTripMapPreview> {
     );
   }
 
-  Future<void> setGoogleMapStyle(gMapController) async {
-    String value = await DefaultAssetBundle.of(context).loadString(
-      'assets/json/google_map_style.json',
-    );
-    //
-    gMapController?.setMapStyle(value);
+  Future<void> setGoogleMapStyle(GoogleMapController gMapController) async {
+    final style =
+        AppStrings.env('mapboxStyleUrl') ?? AppStrings.env('mapbox_style_url');
+    if (style != null && "$style".isNotEmpty) {
+      await gMapController.setMapStyle(style);
+    }
   }
 
   //

@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/my_app.dart';
 import 'package:fuodz/services/cart.service.dart';
 import 'package:fuodz/services/general_app.service.dart';
@@ -12,6 +13,7 @@ import 'package:fuodz/services/local_storage.service.dart';
 import 'package:fuodz/services/firebase.service.dart';
 import 'package:fuodz/services/notification.service.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import 'constants/app_languages.dart';
 
@@ -48,6 +50,10 @@ void main() async {
       FirebaseMessaging.onBackgroundMessage(
         GeneralAppService.onBackgroundMessageHandler,
       );
+
+      gmaps.GoogleMapConfig.accessToken = AppStrings.mapboxAccessToken;
+      gmaps.GoogleMapConfig.styleString =
+          AppStrings.env('mapboxStyleUrl') ?? AppStrings.env('mapbox_style_url');
 
       //prevent ssl error
       HttpOverrides.global = new MyHttpOverrides();

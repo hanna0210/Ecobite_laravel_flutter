@@ -30,7 +30,6 @@ import 'package:fuodz/view_models/payment.view_model.dart';
 import 'package:fuodz/widgets/bottomsheets/parcel_location_picker_option.bottomsheet.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
-import 'package:google_maps_place_picker_mb_v2/google_maps_place_picker.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:fuodz/extensions/context.dart';
 
@@ -377,37 +376,22 @@ class NewParcelViewModel extends PaymentViewModel {
 
   Future<DeliveryAddress?> pickFromMap() async {
     //
-    dynamic result = await newPlacePicker();
-
-    if (result is PickResult) {
-      PickResult locationResult = result;
-      DeliveryAddress deliveryAddress = DeliveryAddress();
-      deliveryAddress.name = locationResult.formattedAddress;
-      deliveryAddress.address = locationResult.formattedAddress;
-      deliveryAddress.latitude = locationResult.geometry?.location.lat;
-      deliveryAddress.longitude = locationResult.geometry?.location.lng;
-      setBusy(true);
-      deliveryaddress = await getLocationCityName(deliveryAddress);
-      setBusy(false);
-      return deliveryAddress;
-    } else if (result is Address) {
-      Address locationResult = result;
-      DeliveryAddress deliveryAddress = DeliveryAddress();
-      deliveryAddress.name = locationResult.addressLine;
-      deliveryAddress.address = locationResult.addressLine;
-      deliveryAddress.latitude = locationResult.coordinates?.latitude;
-      deliveryAddress.longitude = locationResult.coordinates?.longitude;
-      deliveryAddress.city = locationResult.locality;
-      deliveryAddress.state = locationResult.adminArea;
-      deliveryAddress.country = locationResult.countryName;
-      //
-      setBusy(true);
-      deliveryaddress = await getLocationCityName(deliveryAddress);
-      setBusy(false);
-      return deliveryAddress;
+    final Address? locationResult = await newPlacePicker();
+    if (locationResult == null) {
+      return null;
     }
-
-    return null;
+    final DeliveryAddress deliveryAddress = DeliveryAddress();
+    deliveryAddress.name = locationResult.addressLine;
+    deliveryAddress.address = locationResult.addressLine;
+    deliveryAddress.latitude = locationResult.coordinates?.latitude;
+    deliveryAddress.longitude = locationResult.coordinates?.longitude;
+    deliveryAddress.city = locationResult.locality;
+    deliveryAddress.state = locationResult.adminArea;
+    deliveryAddress.country = locationResult.countryName;
+    setBusy(true);
+    deliveryaddress = await getLocationCityName(deliveryAddress);
+    setBusy(false);
+    return deliveryAddress;
   }
 
   //

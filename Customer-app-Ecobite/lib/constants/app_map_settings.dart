@@ -2,10 +2,10 @@ import 'package:fuodz/constants/app_strings.dart';
 
 class AppMapSettings extends AppStrings {
   static bool get useGoogleOnApp {
-    if (AppStrings.env('map') == null ||
-        AppStrings.env('map')["useGoogleOnApp"] == null) {
-      return true;
+    final mapConfig = AppStrings.env('map');
+    if (mapConfig is Map && mapConfig["provider"] != null) {
+      return mapConfig["provider"].toString().toLowerCase() == "google";
     }
-    return [1, "1"].contains(AppStrings.env('map')['useGoogleOnApp'] ?? "1");
+    return false;
   }
 }

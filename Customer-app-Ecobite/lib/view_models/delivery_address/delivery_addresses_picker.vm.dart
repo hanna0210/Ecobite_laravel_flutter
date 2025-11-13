@@ -7,7 +7,6 @@ import 'package:fuodz/services/app.service.dart';
 import 'package:fuodz/services/cart.service.dart';
 import 'package:fuodz/services/geocoder.service.dart';
 import 'package:fuodz/view_models/base.view_model.dart';
-import 'package:google_maps_place_picker_mb_v2/google_maps_place_picker.dart';
 
 class DeliveryAddressPickerViewModel extends MyBaseViewModel {
   //
@@ -83,56 +82,41 @@ class DeliveryAddressPickerViewModel extends MyBaseViewModel {
   //
   void pickFromMap() async {
     //
-    dynamic result = await newPlacePicker();
+    final Address? locationResult = await newPlacePicker();
+    if (locationResult == null) {
+      return;
+    }
     DeliveryAddress deliveryAddress = DeliveryAddress();
+    deliveryAddress.address = locationResult.addressLine;
+    deliveryAddress.latitude = locationResult.coordinates?.latitude;
+    deliveryAddress.longitude = locationResult.coordinates?.longitude;
+    deliveryAddress.city = locationResult.locality;
+    deliveryAddress.state = locationResult.adminArea;
+    deliveryAddress.country = locationResult.countryName;
 
-    if (result is PickResult) {
-      PickResult locationResult = result;
-      deliveryAddress.address = locationResult.formattedAddress;
-      deliveryAddress.latitude = locationResult.geometry?.location.lat;
-      deliveryAddress.longitude = locationResult.geometry?.location.lng;
-
-      if (locationResult.addressComponents != null &&
-          locationResult.addressComponents!.isNotEmpty) {
-        //fetch city, state and country from address components
-        locationResult.addressComponents!.forEach((addressComponent) {
-          if (addressComponent.types.contains("locality")) {
-            deliveryAddress.city = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("administrative_area_level_1")) {
-            deliveryAddress.state = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("country")) {
-            deliveryAddress.country = addressComponent.longName;
-          }
-        });
-      } else {
-        // From coordinates
-        setBusy(true);
-        final coordinates = new Coordinates(
+    final needsDetails = (deliveryAddress.city ?? "").isEmpty ||
+        (deliveryAddress.state ?? "").isEmpty ||
+        (deliveryAddress.country ?? "").isEmpty;
+    if (needsDetails &&
+        deliveryAddress.latitude != null &&
+        deliveryAddress.longitude != null) {
+      setBusy(true);
+      final addresses = await GeocoderService().findAddressesFromCoordinates(
+        Coordinates(
           deliveryAddress.latitude!,
           deliveryAddress.longitude!,
-        );
-        //
-        final addresses = await GeocoderService().findAddressesFromCoordinates(
-          coordinates,
-        );
-        deliveryAddress.city = addresses.first.locality;
-        setBusy(false);
+        ),
+      );
+      setBusy(false);
+      if (addresses.isNotEmpty) {
+        final resolved = addresses.first;
+        deliveryAddress.city = deliveryAddress.city ?? resolved.locality;
+        deliveryAddress.state = deliveryAddress.state ?? resolved.adminArea;
+        deliveryAddress.country =
+            deliveryAddress.country ?? resolved.countryName;
       }
-      //
-      this.onSelectDeliveryAddress(deliveryAddress);
-    } else if (result is Address) {
-      Address locationResult = result;
-      deliveryAddress.address = locationResult.addressLine;
-      deliveryAddress.latitude = locationResult.coordinates?.latitude;
-      deliveryAddress.longitude = locationResult.coordinates?.longitude;
-      deliveryAddress.city = locationResult.locality;
-      deliveryAddress.state = locationResult.adminArea;
-      deliveryAddress.country = locationResult.countryName;
-      //
-      this.onSelectDeliveryAddress(deliveryAddress);
     }
+    onSelectDeliveryAddress(deliveryAddress);
   }
 
   filterResult(String keyword) {

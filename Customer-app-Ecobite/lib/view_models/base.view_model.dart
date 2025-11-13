@@ -33,7 +33,6 @@ import 'package:fuodz/views/shared/ops_map.page.dart';
 import 'package:fuodz/widgets/bottomsheets/delivery_address_picker.bottomsheet.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb_v2/google_maps_place_picker.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
 import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 import 'package:share_plus/share_plus.dart';
@@ -372,7 +371,7 @@ class MyBaseViewModel extends BaseViewModel
   }
 
   // NEW LOCATION PICKER
-  Future<dynamic> newPlacePicker() async {
+  Future<Address?> newPlacePicker() async {
     //
     LatLng initialPosition = LatLng(0.00, 0.00);
     double initialZoom = 0;
@@ -399,33 +398,18 @@ class MyBaseViewModel extends BaseViewModel
           },
         );
 
-    //
-    if (!AppMapSettings.useGoogleOnApp) {
-      return await viewContext.push(
-        (context) => OPSMapPage(
-          region: mapRegion,
-          initialPosition: initialPosition,
-          useCurrentLocation: true,
-          initialZoom: initialZoom,
-        ),
-      );
-    }
-    //google maps
-    return await Navigator.push(
-      viewContext,
-      MaterialPageRoute(
-        builder:
-            (context) => PlacePicker(
-              apiKey: AppStrings.googleMapApiKey,
-              autocompleteLanguage: translator.activeLocale.languageCode,
-              region: mapRegion,
-              onPlacePicked: (result) {
-                Navigator.of(context).pop(result);
-              },
-              initialPosition: initialPosition,
-            ),
+    final result = await viewContext.push(
+      (context) => OPSMapPage(
+        region: mapRegion,
+        initialPosition: initialPosition,
+        useCurrentLocation: true,
+        initialZoom: initialZoom,
       ),
     );
+    if (result is Address) {
+      return result;
+    }
+    return null;
   }
 
   //share

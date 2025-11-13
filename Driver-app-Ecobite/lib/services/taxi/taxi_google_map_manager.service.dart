@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fuodz/constants/app_images.dart';
+import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/services/auth.service.dart';
 import 'package:fuodz/utils/map.utils.dart';
 import 'package:fuodz/utils/utils.dart';
 import 'package:fuodz/view_models/taxi/taxi.vm.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class TaxiGoogleMapManagerService {
@@ -20,7 +20,6 @@ class TaxiGoogleMapManagerService {
   List<LatLng> polylineCoordinates = [];
   Set<Marker> gMapMarkers = {};
   MarkerId driverMarkerId = MarkerId("driverIcon");
-  PolylinePoints polylinePoints = PolylinePoints();
 // for my custom icons
   BitmapDescriptor? sourceIcon;
   BitmapDescriptor? destinationIcon;
@@ -44,26 +43,21 @@ class TaxiGoogleMapManagerService {
     taxiViewModel?.taxiLocationService.handleAutoZoomToLocation();
   }
 
-  void setGoogleMapStyle() async {
-    if (taxiViewModel == null) {
-      return;
-    }
-    String value =
-        await DefaultAssetBundle.of(taxiViewModel!.viewContext).loadString(
-      'assets/json/google_map_style.json',
-    );
-    //
-    mapStyle = value;
+  void setGoogleMapStyle() {
+    mapStyle = taxiViewModel == null
+        ? null
+        : (AppStrings.env('mapboxStyleUrl') ??
+            AppStrings.env('mapbox_style_url'));
     taxiViewModel?.notifyListeners();
   }
 
   setSourceAndDestinationIcons() async {
-    sourceIcon = await BitmapDescriptor.asset(
+    sourceIcon = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(devicePixelRatio: 2.5),
       AppImages.pickupLocation,
     );
     //
-    destinationIcon = await BitmapDescriptor.asset(
+    destinationIcon = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(devicePixelRatio: 2.5),
       AppImages.dropoffLocation,
     );
@@ -73,7 +67,7 @@ class TaxiGoogleMapManagerService {
       ((taxiViewModel?.viewContext.percentWidth ?? 1) * 25).ceil(),
       AppImages.driverCar,
     );
-    driverIcon = BitmapDescriptor.bytes(markerIcond);
+    driverIcon = await BitmapDescriptor.fromBytes(markerIcond);
     //dynamic icon
     try {
       final vehicleType = AuthServices.driverVehicle!.vehicleType;
@@ -82,7 +76,7 @@ class TaxiGoogleMapManagerService {
         url: vehicleType.icon,
       );
       if (iconByteData != null) {
-        driverIcon = await BitmapDescriptor.bytes(iconByteData);
+        driverIcon = await BitmapDescriptor.fromBytes(iconByteData);
       }
     } catch (error) {
       print("Error using dynamic driver icon");

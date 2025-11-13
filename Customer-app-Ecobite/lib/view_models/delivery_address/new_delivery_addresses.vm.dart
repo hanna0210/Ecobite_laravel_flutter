@@ -6,7 +6,6 @@ import 'package:fuodz/services/alert.service.dart';
 import 'package:fuodz/view_models/delivery_address/base_delivery_addresses.vm.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
 import 'package:fuodz/extensions/context.dart';
-import 'package:google_maps_place_picker_mb_v2/google_maps_place_picker.dart';
 
 class NewDeliveryAddressesViewModel extends BaseDeliveryAddressesViewModel {
   //
@@ -25,46 +24,27 @@ class NewDeliveryAddressesViewModel extends BaseDeliveryAddressesViewModel {
 
   //
   showAddressLocationPicker() async {
-    dynamic result = await newPlacePicker();
-
-    if (result is PickResult) {
-      PickResult locationResult = result;
-      addressTEC.text = locationResult.formattedAddress ?? "";
-      deliveryAddress!.address = locationResult.formattedAddress;
-      deliveryAddress!.latitude = locationResult.geometry?.location.lat;
-      deliveryAddress!.longitude = locationResult.geometry?.location.lng;
-
-      if (locationResult.addressComponents != null &&
-          locationResult.addressComponents!.isNotEmpty) {
-        //fetch city, state and country from address components
-        locationResult.addressComponents!.forEach((addressComponent) {
-          if (addressComponent.types.contains("locality")) {
-            deliveryAddress!.city = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("administrative_area_level_1")) {
-            deliveryAddress!.state = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("country")) {
-            deliveryAddress!.country = addressComponent.longName;
-          }
-        });
-      } else {
-        // From coordinates
-        setBusy(true);
-        deliveryAddress = await getLocationCityName(deliveryAddress!);
-        setBusy(false);
-      }
-      notifyListeners();
-    } else if (result is Address) {
-      Address locationResult = result;
-      addressTEC.text = locationResult.addressLine ?? "";
-      deliveryAddress!.address = locationResult.addressLine;
-      deliveryAddress!.latitude = locationResult.coordinates?.latitude;
-      deliveryAddress!.longitude = locationResult.coordinates?.longitude;
-      deliveryAddress!.city = locationResult.locality;
-      deliveryAddress!.state = locationResult.adminArea;
-      deliveryAddress!.country = locationResult.countryName;
+    final Address? locationResult = await newPlacePicker();
+    if (locationResult == null) {
+      return;
     }
+    addressTEC.text = locationResult.addressLine ?? "";
+    deliveryAddress!.address = locationResult.addressLine;
+    deliveryAddress!.latitude = locationResult.coordinates?.latitude;
+    deliveryAddress!.longitude = locationResult.coordinates?.longitude;
+    deliveryAddress!.city = locationResult.locality;
+    deliveryAddress!.state = locationResult.adminArea;
+    deliveryAddress!.country = locationResult.countryName;
+
+    final needsDetails = (deliveryAddress!.city ?? "").isEmpty ||
+        (deliveryAddress!.state ?? "").isEmpty ||
+        (deliveryAddress!.country ?? "").isEmpty;
+    if (needsDetails) {
+      setBusy(true);
+      deliveryAddress = await getLocationCityName(deliveryAddress!);
+      setBusy(false);
+    }
+    notifyListeners();
   }
 
   //

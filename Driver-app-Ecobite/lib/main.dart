@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/my_app.dart';
 import 'package:fuodz/services/general_app.service.dart';
 import 'package:fuodz/services/lifecycle_event_handler.dart';
@@ -14,6 +15,7 @@ import 'package:fuodz/services/location_watcher.service.dart';
 import 'package:fuodz/services/notification.service.dart';
 import 'package:fuodz/services/overlay.service.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import 'constants/app_languages.dart';
 import 'views/overlays/floating_app_bubble.view.dart';
@@ -64,6 +66,10 @@ void main() async {
       LocationServiceWatcher.listenToDelayLocationUpdate();
       //
       OverlayService().closeFloatingBubble();
+
+      gmaps.GoogleMapConfig.accessToken = AppStrings.mapboxAccessToken;
+      gmaps.GoogleMapConfig.styleString =
+          AppStrings.env('mapboxStyleUrl') ?? AppStrings.env('mapbox_style_url');
 
       //prevent ssl error
       HttpOverrides.global = new MyHttpOverrides();

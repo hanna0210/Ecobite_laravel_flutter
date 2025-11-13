@@ -2,12 +2,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fuodz/constants/app_colors.dart';
-import 'package:fuodz/constants/app_strings.dart';
 import 'package:fuodz/models/delivery_address.dart';
 import 'package:fuodz/view_models/taxi/taxi.vm.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:fuodz/services/taxi/mapbox_directions.service.dart';
 
 class TaxiPolylinesService {
   TaxiViewModel taxiViewModel;
@@ -69,26 +68,26 @@ class TaxiPolylinesService {
         anchor: Offset(0.5, 0.5),
       ),
     );
-    //load the ploylines
-    PolylineResult polylineResult = await taxiViewModel
-        .taxiGoogleMapManagerService.polylinePoints
-        .getRouteBetweenCoordinates(
-      AppStrings.googleMapApiKey,
-      PointLatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
-      PointLatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
+    //load the polylines
+    final routePoints = await MapboxDirectionsService.getRoute(
+      origin: LatLng(
+        pickupLocation!.latitude!,
+        pickupLocation!.longitude!,
+      ),
+      destination: LatLng(
+        dropoffLocation!.latitude!,
+        dropoffLocation!.longitude!,
+      ),
     );
-    //get the points from the result
-    List<PointLatLng> result = polylineResult.points;
-    //
-    if (result.isNotEmpty) {
-      //clear previous polyline points
-      taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates.clear();
-      // loop through all PointLatLng points and convert them
-      // to a list of LatLng, required by the Polyline
-      result.forEach((PointLatLng point) {
-        taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates
-            .add(LatLng(point.latitude, point.longitude));
-      });
+    taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates.clear();
+    if (routePoints.isNotEmpty) {
+      taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates
+          .addAll(routePoints);
+    } else {
+      taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates.addAll([
+        LatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
+        LatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
+      ]);
     }
 
     // with an id, an RGB color and the list of LatLng pairs
@@ -148,26 +147,25 @@ class TaxiPolylinesService {
         anchor: Offset(0.5, 0.5),
       ),
     );
-    //load the ploylines
-    PolylineResult polylineResult = await taxiViewModel
-        .taxiGoogleMapManagerService.polylinePoints
-        .getRouteBetweenCoordinates(
-      AppStrings.googleMapApiKey,
-      PointLatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
-      PointLatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
+    final routePoints = await MapboxDirectionsService.getRoute(
+      origin: LatLng(
+        pickupLocation!.latitude!,
+        pickupLocation!.longitude!,
+      ),
+      destination: LatLng(
+        dropoffLocation!.latitude!,
+        dropoffLocation!.longitude!,
+      ),
     );
-    //get the points from the result
-    List<PointLatLng> result = polylineResult.points;
-    //
-    if (result.isNotEmpty) {
-      //clear previous polyline points
-      taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates.clear();
-      // loop through all PointLatLng points and convert them
-      // to a list of LatLng, required by the Polyline
-      result.forEach((PointLatLng point) {
-        taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates
-            .add(LatLng(point.latitude, point.longitude));
-      });
+    taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates.clear();
+    if (routePoints.isNotEmpty) {
+      taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates
+          .addAll(routePoints);
+    } else {
+      taxiViewModel.taxiGoogleMapManagerService.polylineCoordinates.addAll([
+        LatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
+        LatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
+      ]);
     }
 
     // with an id, an RGB color and the list of LatLng pairs
@@ -218,8 +216,12 @@ class TaxiPolylinesService {
     GoogleMapController mapController,
   ) async {
     mapController.animateCamera(cameraUpdate);
-    LatLngBounds l1 = await mapController.getVisibleRegion();
-    LatLngBounds l2 = await mapController.getVisibleRegion();
+    final l1 = await mapController.getVisibleRegion();
+    final l2 = await mapController.getVisibleRegion();
+
+    if (l1 == null || l2 == null) {
+      return checkCameraLocation(cameraUpdate, mapController);
+    }
 
     if (l1.southwest.latitude == -90 || l2.southwest.latitude == -90) {
       return checkCameraLocation(cameraUpdate, mapController);

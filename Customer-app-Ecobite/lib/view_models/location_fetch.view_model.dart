@@ -7,7 +7,6 @@ import 'package:fuodz/services/location.service.dart';
 import 'package:fuodz/services/permission.service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localize_and_translate/localize_and_translate.dart';
-import 'package:google_maps_place_picker_mb_v2/google_maps_place_picker.dart';
 import 'base.view_model.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:fuodz/extensions/context.dart';
@@ -96,78 +95,34 @@ class LocationFetchViewModel extends MyBaseViewModel {
     //
     await locationPermissionGetter();
 
-    dynamic result = await newPlacePicker();
-    DeliveryAddress deliveryAddress = DeliveryAddress();
-
-    if (result is PickResult) {
-      PickResult locationResult = result;
-      deliveryAddress.address = locationResult.formattedAddress;
-      deliveryAddress.latitude = locationResult.geometry?.location.lat;
-      deliveryAddress.longitude = locationResult.geometry?.location.lng;
-
-      //
-      if (locationResult.addressComponents != null &&
-          locationResult.addressComponents!.isNotEmpty) {
-        //fetch city, state and country from address components
-        locationResult.addressComponents!.forEach((addressComponent) {
-          if (addressComponent.types.contains("locality")) {
-            deliveryAddress.city = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("administrative_area_level_1")) {
-            deliveryAddress.state = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("country")) {
-            deliveryAddress.country = addressComponent.longName;
-          }
-        });
-        //get address from delivery address
-        Address address = Address(
-          featureName: deliveryAddress.name ?? deliveryAddress.address,
-          addressLine: deliveryAddress.address,
-          locality: deliveryAddress.city,
-          adminArea: deliveryAddress.state,
-          countryName: deliveryAddress.country,
-          coordinates: Coordinates(
-            deliveryAddress.latitude!,
-            deliveryAddress.longitude!,
-          ),
-        );
-        //
-        LocationService.deliveryaddress = deliveryAddress;
-
-        LocationService.currenctAddressSubject.add(address);
-      } else {
-        // From coordinates
-        setBusy(true);
-        final coordinates = new Coordinates(
-          deliveryAddress.latitude!,
-          deliveryAddress.longitude!,
-        );
-        //
-        final addresses = await GeocoderService().findAddressesFromCoordinates(
-          coordinates,
-        );
-        deliveryAddress.city = addresses.first.locality;
-        setBusy(false);
-        //
-        LocationService.deliveryaddress = deliveryAddress;
-        LocationService.currenctAddressSubject.add(addresses.first);
-      }
-
-      loadNextPage();
-    } else if (result is Address) {
-      Address locationResult = result;
-      deliveryAddress.address = locationResult.addressLine;
-      deliveryAddress.latitude = locationResult.coordinates?.latitude;
-      deliveryAddress.longitude = locationResult.coordinates?.longitude;
-      deliveryAddress.city = locationResult.locality;
-      deliveryAddress.state = locationResult.adminArea;
-      deliveryAddress.country = locationResult.countryName;
-      //
-      LocationService.deliveryaddress = deliveryAddress;
-      LocationService.currenctAddressSubject.add(locationResult);
-      loadNextPage();
+    final Address? locationResult = await newPlacePicker();
+    if (locationResult == null) {
+      return;
     }
+    DeliveryAddress deliveryAddress = DeliveryAddress();
+    deliveryAddress.address = locationResult.addressLine;
+    deliveryAddress.name =
+        locationResult.featureName ?? locationResult.addressLine;
+    deliveryAddress.latitude = locationResult.coordinates?.latitude;
+    deliveryAddress.longitude = locationResult.coordinates?.longitude;
+    deliveryAddress.city = locationResult.locality;
+    deliveryAddress.state = locationResult.adminArea;
+    deliveryAddress.country = locationResult.countryName;
+
+    if (deliveryAddress.latitude != null && deliveryAddress.longitude != null) {
+      final needsDetails = (deliveryAddress.city ?? "").isEmpty ||
+          (deliveryAddress.state ?? "").isEmpty ||
+          (deliveryAddress.country ?? "").isEmpty;
+      if (needsDetails) {
+        setBusy(true);
+        deliveryAddress = await getLocationCityName(deliveryAddress);
+        setBusy(false);
+      }
+    }
+
+    LocationService.deliveryaddress = deliveryAddress;
+    LocationService.currenctAddressSubject.add(locationResult);
+    loadNextPage();
   }
 
   loadNextPage() async {

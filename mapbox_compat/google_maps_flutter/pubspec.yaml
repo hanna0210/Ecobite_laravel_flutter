@@ -1,0 +1,21 @@
+name: google_maps_flutter
+description: Mapbox-backed compatibility layer exposing a subset of the google_maps_flutter API.
+version: 0.0.1
+homepage: https://example.com
+publish_to: "none"
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  mapbox_maps_flutter: ^2.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: false
+

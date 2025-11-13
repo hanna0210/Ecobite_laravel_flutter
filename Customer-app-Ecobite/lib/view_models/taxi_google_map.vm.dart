@@ -9,14 +9,12 @@ import 'package:fuodz/models/delivery_address.dart';
 import 'package:fuodz/models/vehicle_type.dart';
 import 'package:fuodz/services/geocoder.service.dart';
 import 'package:fuodz/services/location.service.dart';
+import 'package:fuodz/services/mapbox_directions.service.dart';
 import 'package:fuodz/utils/map.utils.dart';
 import 'package:fuodz/view_models/checkout_base.vm.dart';
 import 'package:fuodz/views/pages/delivery_address/widgets/address_search.view.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_maps_place_picker_mb_v2/google_maps_place_picker.dart';
-import 'package:google_places_flutter/model/prediction.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 // import 'package:geocoder/geocoder.dart';
 
 class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
@@ -37,7 +35,6 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
   // this will hold each polyline coordinate as Lat and Lng pairs
   List<LatLng> polylineCoordinates = [];
   Set<Marker> gMapMarkers = {};
-  PolylinePoints polylinePoints = PolylinePoints();
   StreamSubscription? driverLocationStream;
   // for my custom icons
   BitmapDescriptor? sourceIcon;
@@ -84,11 +81,9 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
   }
 
   //
-  void setGoogleMapStyle() async {
-    mapStyle = await DefaultAssetBundle.of(
-      viewContext,
-    ).loadString('assets/json/google_map_style.json');
-    //
+  void setGoogleMapStyle() {
+    mapStyle = AppStrings.env('mapboxStyleUrl') ??
+        AppStrings.env('mapbox_style_url');
     notifyListeners();
   }
 
@@ -183,17 +178,7 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
         return AddressSearchView(
           this,
           addressSelected: (dynamic prediction) async {
-            if (prediction is Prediction) {
-              deliveryAddress?.address = prediction.description;
-              deliveryAddress?.latitude = prediction.lat?.toDoubleOrNull();
-              deliveryAddress?.longitude = prediction.lng?.toDoubleOrNull();
-              //
-              checkout!.deliveryAddress = deliveryAddress;
-              //
-              setBusy(true);
-              await getLocationCityName(deliveryAddress!);
-              setBusy(false);
-            } else if (prediction is Address) {
+            if (prediction is Address) {
               deliveryAddress?.address = prediction.addressLine;
               deliveryAddress?.latitude = prediction.coordinates?.latitude;
               deliveryAddress?.longitude = prediction.coordinates?.longitude;
@@ -212,39 +197,9 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
   //
   Future<DeliveryAddress> showDeliveryAddressPicker() async {
     //
-    dynamic result = await newPlacePicker();
+    final Address? locationResult = await newPlacePicker();
 
-    if (result is PickResult) {
-      PickResult locationResult = result;
-      deliveryAddress = DeliveryAddress();
-      deliveryAddress!.address = locationResult.formattedAddress;
-      deliveryAddress!.latitude = locationResult.geometry?.location.lat;
-      deliveryAddress!.longitude = locationResult.geometry?.location.lng;
-      checkout!.deliveryAddress = deliveryAddress;
-
-      if (locationResult.addressComponents != null &&
-          locationResult.addressComponents!.isNotEmpty) {
-        //fetch city, state and country from address components
-        locationResult.addressComponents!.forEach((addressComponent) {
-          if (addressComponent.types.contains("locality")) {
-            deliveryAddress!.city = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("administrative_area_level_1")) {
-            deliveryAddress!.state = addressComponent.longName;
-          }
-          if (addressComponent.types.contains("country")) {
-            deliveryAddress!.country = addressComponent.longName;
-          }
-        });
-      } else {
-        // From coordinates
-        setBusy(true);
-        deliveryAddress = await getLocationCityName(deliveryAddress!);
-        setBusy(false);
-      }
-      openLocationSelector(currentAddressSelectionStep, showpicker: false);
-    } else if (result is Address) {
-      Address locationResult = result;
+    if (locationResult != null) {
       deliveryAddress = DeliveryAddress();
       deliveryAddress?.address = locationResult.addressLine;
       deliveryAddress?.latitude = locationResult.coordinates?.latitude;
@@ -253,10 +208,8 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
       deliveryAddress?.state = locationResult.adminArea;
       deliveryAddress?.country = locationResult.countryName;
       checkout!.deliveryAddress = deliveryAddress;
-      //
       openLocationSelector(currentAddressSelectionStep, showpicker: false);
     }
-    //
 
     return deliveryAddress ?? DeliveryAddress();
   }
@@ -320,21 +273,21 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
       ),
     );
     //load the ploylines
-    PolylineResult polylineResult = await polylinePoints
-        .getRouteBetweenCoordinates(
-          AppStrings.googleMapApiKey,
-          PointLatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
-          PointLatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
-        );
-    //get the points from the result
-    List<PointLatLng> result = polylineResult.points;
-    //
-    if (result.isNotEmpty) {
-      // loop through all PointLatLng points and convert them
-      // to a list of LatLng, required by the Polyline
-      result.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
+    final routePoints = await MapboxDirectionsService.getRoute(
+      origin: LatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
+      destination:
+          LatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
+    );
+    polylineCoordinates = [];
+    if (routePoints.isNotEmpty) {
+      polylineCoordinates.addAll(routePoints);
+    } else {
+      polylineCoordinates.add(
+        LatLng(pickupLocation!.latitude!, pickupLocation!.longitude!),
+      );
+      polylineCoordinates.add(
+        LatLng(dropoffLocation!.latitude!, dropoffLocation!.longitude!),
+      );
     }
 
     // with an id, an RGB color and the list of LatLng pairs
@@ -407,8 +360,12 @@ class TaxiGoogleMapViewModel extends CheckoutBaseViewModel {
       return;
     }
     mapController.animateCamera(cameraUpdate);
-    LatLngBounds l1 = await mapController.getVisibleRegion();
-    LatLngBounds l2 = await mapController.getVisibleRegion();
+    final l1 = await mapController.getVisibleRegion();
+    final l2 = await mapController.getVisibleRegion();
+
+    if (l1 == null || l2 == null) {
+      return checkCameraLocation(cameraUpdate, mapController);
+    }
 
     if (l1.southwest.latitude == -90 || l2.southwest.latitude == -90) {
       return checkCameraLocation(cameraUpdate, mapController);

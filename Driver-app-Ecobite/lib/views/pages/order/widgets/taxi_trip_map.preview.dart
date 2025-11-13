@@ -71,12 +71,12 @@ class _TaxiTripMapPreviewState extends State<TaxiTripMapPreview> {
 
   //
   Future<List<Marker>> getLocMakers() async {
-    BitmapDescriptor sourceIcon = await BitmapDescriptor.asset(
+    BitmapDescriptor sourceIcon = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(devicePixelRatio: 2.5),
       AppImages.pickupLocation,
     );
     //
-    BitmapDescriptor destinationIcon = await BitmapDescriptor.asset(
+    BitmapDescriptor destinationIcon = await BitmapDescriptor.fromAssetImage(
       ImageConfiguration(devicePixelRatio: 2.5),
       AppImages.dropoffLocation,
     );
